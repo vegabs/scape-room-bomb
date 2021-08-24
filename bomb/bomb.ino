@@ -1,4 +1,5 @@
 void setup() {
+  Serial.begin(9600);
 }
 
 bool verificaClave(uint8_t *pclaveUser, uint8_t *pclaveCorrecta, uint8_t sizeContra) {
@@ -15,8 +16,6 @@ bool verificaClave(uint8_t *pclaveUser, uint8_t *pclaveCorrecta, uint8_t sizeCon
 }
 
 void bomb() {
-  
-  Serial.begin(9600);
   static const uint8_t upPin = 2;
   static const uint8_t downPin = 3;
   static const uint8_t armPin = 4;
@@ -35,18 +34,16 @@ void bomb() {
   // estado de configuracion
   if (estadoBomba == 0) {
 
-    uint32_t currentMillis = millis();
-    if ((currentMillis - previousMillis) >= interval2 ) {
-      if (cuentaBomba >= 10 && cuentaBomba <= 60) {
+    if (cuentaBomba >= 10 && cuentaBomba <= 60) {
 
-        if (digitalRead(upPin) == HIGH) cuentaBomba++;
-        if (digitalRead(downPin) == HIGH) cuentaBomba--;
+      if (digitalRead(upPin) == HIGH) cuentaBomba++;
+      if (digitalRead(downPin) == HIGH) cuentaBomba--;
 
-        if (cuentaBomba == 9) cuentaBomba = 10;
-        if (cuentaBomba == 61) cuentaBomba = 60;
-      }
-      Serial.println("TIMER: " + (String)cuentaBomba + " s.");
+      if (cuentaBomba == 9) cuentaBomba = 10;
+      if (cuentaBomba == 61) cuentaBomba = 60;
     }
+
+    Serial.println("SET: 00:" + (String)cuentaBomba);
 
     if (digitalRead(armPin) == HIGH) {
       Serial.println("BOMBA ARMADA");
@@ -61,15 +58,12 @@ void bomb() {
     uint32_t currentMillis = millis();
 
     if ((currentMillis - previousMillis) >= interval ) {
-
       previousMillis = currentMillis;
+      Serial.println("TIMER: 00:" + (String)cuentaBomba);
       cuentaBomba--;
-      Serial.println("Quedan: " + (String)cuentaBomba);
-
     }
 
     else if ((currentMillis - previousMillis2) >= interval2) {
-
       previousMillis2 = currentMillis;
 
       // verificar codigo de seguridad
@@ -90,15 +84,13 @@ void bomb() {
       }
 
       if (cuentaTeclado == 6) {
-
-        bool resultado = verificaClave(contraTeclado, contraSegura, cuentaTeclado);
-
-        if (resultado == true) {
+        bool esClave = verificaClave(contraTeclado, contraSegura, cuentaTeclado);
+        if (esClave == true) {
           cuentaBomba = 20;
           estadoBomba = 0;
+          cuentaUpdate = 0;
           delay(100);
         }
-
         cuentaTeclado = 0;
       }
 
@@ -108,6 +100,7 @@ void bomb() {
     if (cuentaBomba == 0) {
       Serial.println("BOMBA EXPLOTO");
       cuentaBomba = 20;
+      cuentaUpdate = 0;
       estadoBomba = 0;
     }
   }
