@@ -14,7 +14,7 @@ Proyecto 1, Sistemas Físicos Interactivos, UPB
 
 ## Requisitos
 - [ ] R01: la solución debe tener dos tareas concurrentes. La Tarea 1 se debe encargar del control de la bomba. La Tarea 2 debe generar una señal digital periódica con una frecuencia de 1 Hz. La señal debe permanecer en alto 500 ms y en bajo 500 ms.
-- [ ] R02: debes almacenar la clave de desarmado de la bomba en una arreglo.
+- [x] R02: debes almacenar la clave de desarmado de la bomba en una arreglo.
 - [ ] R03: debes definir una función a la cual le pasarás la dirección en memoria de dos arreglos: uno con la clave recibida y otro con la clave correcta. La función deberá devolver un bool así: true si la clave recibida es igual a la clave almacenada o false si las claves no coinciden.
 - [ ] R04: realiza un diagrama con el modelo en máquina de estados para tu solución.
 - [ ] R05: define varios escenarios de prueba que permitan recoger la funcionalidad descrita del controlador.
