@@ -63,14 +63,16 @@ void bomb() {
       // verificar codigo de seguridad
       if (digitalRead(upPin) == HIGH) {
         Serial.println("estoy aqui");
-        //contraTeclado[cuentaTeclado] = 1;
-        //cuentaTeclado++;
+        contraTeclado[cuentaTeclado] = 1;
+        cuentaTeclado++;
       }
       if (digitalRead(downPin) == HIGH) {
+        Serial.println("estoy aqui1");
         contraTeclado[cuentaTeclado] = 2;
         cuentaTeclado++;
       }
       if (digitalRead(armPin) == HIGH) {
+        Serial.println("estoy aqui2");
         contraTeclado[cuentaTeclado] = 3;
         cuentaTeclado++;
 
