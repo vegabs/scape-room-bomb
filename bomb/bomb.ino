@@ -107,9 +107,26 @@ void bomb() {
 }
 
 void senal() {
+  uint32_t currentMillisPWM = millis();
+  static uint32_t previousMillisPWM = 0;
+  const uint32_t intervalPWM = 500;
+  static uint8_t PWMState = LOW;
+
+  if (currentMillisPWM - previousMillisPWM >= intervalPWM) {
+    previousMillisPWM = currentMillisPWM;
+ 
+    if (PWMState == LOW) {
+      PWMState = HIGH;
+      digitalWrite(8, 1);
+      
+    } else {
+      PWMState = LOW;
+      digitalWrite(8, 0);
+    }
+  }
 }
 
-void loop() {
-  bomb();
-  senal();
-}
+  void loop() {
+    bomb();
+    senal();
+  }
