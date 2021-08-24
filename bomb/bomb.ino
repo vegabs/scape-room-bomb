@@ -1,19 +1,22 @@
 void setup() {
-  Serial.begin(9600);
 }
 
-void verificaClave(uint8_t *pclaveUser, uint8_t *pclaveCorrecta, uint8_t sizeContra, uint8_t *res) {
-  uint8_t correctas = 0;
+bool verificaClave(uint8_t *pclaveUser, uint8_t *pclaveCorrecta, uint8_t sizeContra) {
 
+  bool resu = 0;
+  uint8_t correctas = 0;
   for (int i = 0; i < sizeContra; i++) {
     if (*(pclaveUser + i) == *(pclaveCorrecta + i)) correctas++;
   }
 
-  if (correctas == 6) Serial.println("Clave correcta");
+  (correctas == 6) ? Serial.println("BOMBA DESARMADA") : Serial.println("INCORRECTO");
+  (correctas == 6) ? resu = 1 : resu = 0;
+  return resu;
 }
 
 void bomb() {
-
+  
+  Serial.begin(9600);
   static const uint8_t upPin = 2;
   static const uint8_t downPin = 3;
   static const uint8_t armPin = 4;
@@ -21,7 +24,7 @@ void bomb() {
   static uint8_t cuentaUpdate = 0;
   static uint8_t estadoBomba = 0; // 0: desarmada, 1: armada
   static const uint32_t interval = 1000;
-  static const uint32_t interval2 = 100;
+  static const uint32_t interval2 = 50;
   static uint32_t previousMillis = 0;
   static uint32_t previousMillis2 = 0;
   static uint8_t cuentaBomba = 20;
@@ -29,36 +32,42 @@ void bomb() {
   static uint8_t contraTeclado[6];
   static uint8_t contraSegura[6] = {2, 1, 2, 2, 1, 3};
 
+  // estado de configuracion
   if (estadoBomba == 0) {
 
-    if (cuentaBomba >= 10 && cuentaBomba <= 60) {
+    uint32_t currentMillis = millis();
+    if ((currentMillis - previousMillis) >= interval2 ) {
+      if (cuentaBomba >= 10 && cuentaBomba <= 60) {
 
-      if (digitalRead(upPin) == HIGH) cuentaBomba++;
-      if (digitalRead(downPin) == HIGH) cuentaBomba--;
+        if (digitalRead(upPin) == HIGH) cuentaBomba++;
+        if (digitalRead(downPin) == HIGH) cuentaBomba--;
 
-      if (cuentaBomba == 9) cuentaBomba = 10;
-      if (cuentaBomba == 61) cuentaBomba = 60;
+        if (cuentaBomba == 9) cuentaBomba = 10;
+        if (cuentaBomba == 61) cuentaBomba = 60;
+      }
+      Serial.println("TIMER: " + (String)cuentaBomba + " s.");
     }
-
-    Serial.print(cuentaBomba);
-    Serial.println(" segundos");
 
     if (digitalRead(armPin) == HIGH) {
-      estadoBomba = 1;
       Serial.println("BOMBA ARMADA");
+      estadoBomba = 1;
     }
+
   }
 
+  // estado conteo
   if (estadoBomba == 1) {
+
     uint32_t currentMillis = millis();
 
-    if ( (currentMillis - previousMillis) >= interval ) {
+    if ((currentMillis - previousMillis) >= interval ) {
 
       previousMillis = currentMillis;
       cuentaBomba--;
-      Serial.print("Quedan: ");
-      Serial.println(cuentaBomba);
+      Serial.println("Quedan: " + (String)cuentaBomba);
+
     }
+
     else if ((currentMillis - previousMillis2) >= interval2) {
 
       previousMillis2 = currentMillis;
@@ -81,8 +90,15 @@ void bomb() {
       }
 
       if (cuentaTeclado == 6) {
-        uint8_t resultado = 0;
-        verificaClave(contraTeclado, contraSegura, cuentaTeclado, &resultado);
+
+        bool resultado = verificaClave(contraTeclado, contraSegura, cuentaTeclado);
+
+        if (resultado == true) {
+          cuentaBomba = 20;
+          estadoBomba = 0;
+          delay(100);
+        }
+
         cuentaTeclado = 0;
       }
 
