@@ -109,11 +109,11 @@ void senal() {
 
     if (PWMState == LOW) {
       PWMState = HIGH;
-      digitalWrite(8, 1);
+      analogWrite(3, 0);
 
     } else {
       PWMState = LOW;
-      digitalWrite(8, 0);
+      analogWrite(3, 255);
     }
   }
 }
