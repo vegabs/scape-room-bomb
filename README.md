@@ -20,3 +20,6 @@ Proyecto 1, Sistemas Físicos Interactivos, UPB
 - [ ] R05: define varios escenarios de prueba que permitan recoger la funcionalidad descrita del controlador.
 - [ ] R06: implementa el modelo de máquina de estados considerando todas las tareas solicitadas.
 - [ ] R07: verifica todos los escenarios de prueba definidos.
+
+## References
+- https://www.programmingelectronics.com/debouncing-a-button-with-arduino/
