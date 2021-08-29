@@ -21,13 +21,14 @@ void bomb() {
   static const uint8_t armPin = 5;
 
   static uint8_t cuentaUpdate = 0;
-  static uint8_t previousARM = false;
   static uint8_t estadoBomba = 0; // 0: desarmada, 1: armada
+  static bool previousBOOM = false;
   static const uint32_t interval = 1000;
   static uint32_t interval2 = 50;
   static uint32_t previousMillis = 0;
   static uint32_t previousMillis2 = 0;
   static uint32_t previousMillisSET = 0;
+  static uint32_t previousARM = 0;
   static uint8_t cuentaBomba = 20;
   static uint8_t cuentaTeclado = 0;
   static uint8_t contraTeclado[6];
@@ -35,8 +36,8 @@ void bomb() {
 
   switch (estadoBomba) {
     case 0: {
+
         uint32_t currentMillisSET = millis();
-        previousARM ? interval2 = 200 : interval2 = 50;
         if ((currentMillisSET - previousMillisSET) >= interval2) {
           previousMillisSET = currentMillisSET;
           if (cuentaBomba >= 10 && cuentaBomba <= 60) {
@@ -47,11 +48,20 @@ void bomb() {
           }
           Serial.println("SET: 00:" + (String)cuentaBomba);
         }
+
         if (digitalRead(armPin) == HIGH) {
-          Serial.println("BOMBA ARMADA");
-          estadoBomba = 1;
-          previousARM = false;
+          if (previousBOOM == true) {
+            if (millis() - previousARM > 300) {
+              Serial.println("BOMBA ARMADA");
+              estadoBomba = 1;
+              previousBOOM = false;
+            }
+          } else {
+            Serial.println("BOMBA ARMADA");
+            estadoBomba = 1;
+          }
         }
+
         break;
       }
 
@@ -85,7 +95,8 @@ void bomb() {
             bool esClave = verificaClave(contraTeclado, contraSegura, cuentaTeclado);
             if (esClave == true) {
               cuentaBomba = 20; estadoBomba = 0; cuentaUpdate = 0;
-              previousARM = true;
+              previousARM = millis();
+              previousBOOM = true;
             }
             cuentaTeclado = 0;
           }
